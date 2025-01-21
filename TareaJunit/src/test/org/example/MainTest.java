@@ -21,7 +21,7 @@ public class MainTest {
     @Test
     public void UsuarioNoExiste() {
 
-        System.setOut(new PrintStream(outContent)); // Redirige la salida estándar
+        System.setOut(new PrintStream(outContent)); // Redirige la salida estándar de la consola al ByteArrayOutputStream
         String input = "12345678A\n4\n"; // DNI no registrado y salir. Esto simula la entrada de usuario
         System.setIn(new ByteArrayInputStream(input.getBytes()));
         GestorBaseDatos bbdd = mock(GestorBaseDatos.class); // Crea una simulación para GestorBaseDatos
@@ -89,7 +89,7 @@ public class MainTest {
         4. Salir
         """;
 
-        // Normalizar las cadenas de Mac a Windows
+        // Normalizar las cadenas para su comparación posterior en la verificación
         salidaEsperada = salidaEsperada.replace("\r\n", "\n").replace("\r", "\n").trim();
         salidaGenerada = salidaGenerada.replace("\r\n", "\n").replace("\r", "\n").trim();
 
@@ -105,11 +105,9 @@ public class MainTest {
                 "El flujo de salida no es correcto. Salida generada: " + salidaGenerada);
     }
 
-
-
     // Test de validación de Gasto
 
-    @BeforeEach // Con esto el test de registrar gasto opcion invalida no falla cuando por como está planteado el código debería
+    @BeforeEach // Con esto el test de registrar gasto opcion invalida no falla cuando por como está planteado el código debería al menos en parte
     public void setUp() {
         gastos.clear();  // Limpiar la lista de gastos
         saldo = 1000;    // Asegúrate de que el saldo tenga un valor conocido
@@ -118,7 +116,8 @@ public class MainTest {
     @Test
     public void RegistrarGastoValido() {
 
-        String input = "1\n200\n"; // Simular entrada del usuario: opción 1 (Vacaciones) y cantidad 200
+        // Simular entrada del usuario: opción 1 (Vacaciones) y cantidad 200, aunque en este caso es "Nómina" por error en el programa
+        String input = "1\n200\n";
         ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -130,6 +129,7 @@ public class MainTest {
 
         // Verificaciones
         assertEquals(1, gastos.size(), "El gasto no fue agregado a la lista.");
+        // Está Nomina porque no está cambiado en el programa los conceptos de gasto
         assertEquals("Nómina", gastos.get(0).getConcepto(), "El concepto del gasto no es correcto.");
         assertEquals(200, gastos.get(0).getCantidad(), 0.01, "La cantidad del gasto no es correcta.");
         assertTrue(saldo > 0, "El saldo no se actualizó correctamente.");
